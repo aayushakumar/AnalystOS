@@ -9,9 +9,8 @@
     <a href="#architecture">Architecture</a> &middot;
   </p>
 </p>
----
 
-**[Try the live demo →](https://myanalystos.vercel.app/)**
+**[Try the live demo](https://myanalystos.vercel.app/)**
 
 > Not another chat-to-SQL demo. AnalystOS is a **controlled multi-agent pipeline** with planning, validation, critique, observability, and evaluation — the kind of system you'd build at a top AI company.
 
@@ -102,7 +101,7 @@ Most LLM analytics tools are a single prompt that generates SQL. They fail in pr
 │  Next.js 14  —  Chat UI  ·  Trace Timeline  ·  Charts  ·  Eval       │
 └──────────────────────────────┬───────────────────────────────────────┘
                                │  REST + Server-Sent Events (SSE)
-┌──────────────────────────────▼───────────────────────────────────────┐
+┌──────────────────────────────▼────────────────────────────────────────┐
 │  FastAPI Backend                                                      │
 │                                                                       │
 │  ┌─────────────────────────────────────────────────────────────────┐  │
