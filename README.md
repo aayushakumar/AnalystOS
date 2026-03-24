@@ -4,14 +4,14 @@
     <strong>An enterprise-grade agentic analytics copilot that turns natural-language business questions into trustworthy, evidence-backed answers.</strong>
   </p>
   <p align="center">
+    <a href="https://myanalystos.vercel.app/">Live Demo</a> &middot;
     <a href="#quick-start">Quick Start</a> &middot;
-    <a href="#live-demo">Live Demo</a> &middot;
     <a href="#architecture">Architecture</a> &middot;
-    <a href="#deploy-for-free">Deploy</a>
   </p>
 </p>
-
 ---
+
+**[Try the live demo →](https://myanalystos.vercel.app/)**
 
 > Not another chat-to-SQL demo. AnalystOS is a **controlled multi-agent pipeline** with planning, validation, critique, observability, and evaluation — the kind of system you'd build at a top AI company.
 
