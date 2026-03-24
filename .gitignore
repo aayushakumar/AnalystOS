@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Environment (secrets — never commit)
+.env
+.env.local
+backend/.env
+
+# Data files (generated)
+backend/data/analystos.duckdb
+backend/data/traces.db
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
