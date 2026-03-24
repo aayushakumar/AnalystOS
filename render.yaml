@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: analystos-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ANALYST_PRIMARY_MODEL
+        value: groq/llama-3.1-8b-instant
+      - key: ANALYST_CHEAP_MODEL
+        value: groq/llama-3.1-8b-instant
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
