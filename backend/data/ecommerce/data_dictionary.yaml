@@ -1,0 +1,368 @@
+tables:
+  customers:
+    description: Registered customer accounts with demographic and segmentation data.
+    freshness: Updated at registration; segment may change quarterly.
+    columns:
+      - name: customer_id
+        type: INTEGER
+        description: Unique customer identifier (primary key).
+        nullable: false
+        example: 1042
+      - name: name
+        type: VARCHAR
+        description: Full name of the customer.
+        nullable: false
+        example: "Jane Smith"
+      - name: email
+        type: VARCHAR
+        description: Customer email address.
+        nullable: false
+        example: "jane.smith@example.com"
+      - name: segment
+        type: VARCHAR
+        description: "Customer tier: premium, standard, or basic."
+        nullable: false
+        example: "premium"
+      - name: region
+        type: VARCHAR
+        description: "Geographic region: Northeast, Southeast, Midwest, West, Southwest."
+        nullable: false
+        example: "West"
+      - name: created_at
+        type: DATE
+        description: Date the customer account was created.
+        nullable: false
+        example: "2024-03-15"
+    relationships:
+      - target: orders
+        join: "customers.customer_id = orders.customer_id"
+        cardinality: one-to-many
+      - target: sessions
+        join: "customers.customer_id = sessions.customer_id"
+        cardinality: one-to-many
+
+  products:
+    description: Product catalog with pricing and cost information.
+    freshness: Updated when products are added or repriced.
+    columns:
+      - name: product_id
+        type: INTEGER
+        description: Unique product identifier (primary key).
+        nullable: false
+        example: 237
+      - name: name
+        type: VARCHAR
+        description: Product display name.
+        nullable: false
+        example: "Wireless Headphones Pro"
+      - name: category
+        type: VARCHAR
+        description: "Top-level category: Electronics, Clothing, Home & Kitchen, Sports, Books, Beauty."
+        nullable: false
+        example: "Electronics"
+      - name: subcategory
+        type: VARCHAR
+        description: Subcategory within the parent category.
+        nullable: false
+        example: "Headphones"
+      - name: price
+        type: DOUBLE
+        description: Current retail price in USD.
+        nullable: false
+        example: 79.99
+      - name: cost
+        type: DOUBLE
+        description: Cost of goods sold (COGS) per unit in USD.
+        nullable: false
+        example: 34.50
+    relationships:
+      - target: order_items
+        join: "products.product_id = order_items.product_id"
+        cardinality: one-to-many
+
+  orders:
+    description: Customer orders with status and acquisition channel.
+    freshness: Real-time; new orders appear immediately.
+    columns:
+      - name: order_id
+        type: INTEGER
+        description: Unique order identifier (primary key).
+        nullable: false
+        example: 8421
+      - name: customer_id
+        type: INTEGER
+        description: Foreign key to customers table.
+        nullable: false
+        example: 1042
+      - name: order_date
+        type: DATE
+        description: Date the order was placed.
+        nullable: false
+        example: "2024-07-22"
+      - name: status
+        type: VARCHAR
+        description: "Order status: completed, pending, cancelled, refunded."
+        nullable: false
+        example: "completed"
+      - name: channel
+        type: VARCHAR
+        description: "Acquisition channel: organic, paid_search, social, email, referral, direct."
+        nullable: false
+        example: "organic"
+    relationships:
+      - target: customers
+        join: "orders.customer_id = customers.customer_id"
+        cardinality: many-to-one
+      - target: order_items
+        join: "orders.order_id = order_items.order_id"
+        cardinality: one-to-many
+
+  order_items:
+    description: Line items within orders linking to products with quantity and pricing.
+    freshness: Created with the parent order.
+    columns:
+      - name: item_id
+        type: INTEGER
+        description: Unique line-item identifier (primary key).
+        nullable: false
+        example: 50123
+      - name: order_id
+        type: INTEGER
+        description: Foreign key to orders table.
+        nullable: false
+        example: 8421
+      - name: product_id
+        type: INTEGER
+        description: Foreign key to products table.
+        nullable: false
+        example: 237
+      - name: quantity
+        type: INTEGER
+        description: Number of units ordered.
+        nullable: false
+        example: 2
+      - name: unit_price
+        type: DOUBLE
+        description: Price per unit at the time of order (may differ from current product price).
+        nullable: false
+        example: 79.99
+      - name: discount
+        type: DOUBLE
+        description: Discount amount in USD applied to this line item.
+        nullable: false
+        example: 8.00
+    relationships:
+      - target: orders
+        join: "order_items.order_id = orders.order_id"
+        cardinality: many-to-one
+      - target: products
+        join: "order_items.product_id = products.product_id"
+        cardinality: many-to-one
+
+  sessions:
+    description: Website/app browsing sessions with conversion tracking.
+    freshness: Logged in real-time; sessions close after 30 min inactivity.
+    columns:
+      - name: session_id
+        type: INTEGER
+        description: Unique session identifier (primary key).
+        nullable: false
+        example: 91234
+      - name: customer_id
+        type: INTEGER
+        description: Foreign key to customers table (logged-in sessions only).
+        nullable: false
+        example: 1042
+      - name: session_date
+        type: DATE
+        description: Date the session started.
+        nullable: false
+        example: "2024-09-10"
+      - name: device
+        type: VARCHAR
+        description: "Device type: desktop, mobile, tablet."
+        nullable: false
+        example: "mobile"
+      - name: source
+        type: VARCHAR
+        description: "Traffic source channel: organic, paid_search, social, email, referral, direct."
+        nullable: false
+        example: "paid_search"
+      - name: pages_viewed
+        type: INTEGER
+        description: Number of pages viewed during the session.
+        nullable: false
+        example: 7
+      - name: converted
+        type: BOOLEAN
+        description: Whether the session resulted in a purchase.
+        nullable: false
+        example: true
+    relationships:
+      - target: customers
+        join: "sessions.customer_id = customers.customer_id"
+        cardinality: many-to-one
+
+  marketing_spend:
+    description: Daily marketing spend by channel with impression and click data.
+    freshness: Aggregated daily from ad platforms; 1-day lag typical.
+    columns:
+      - name: spend_id
+        type: INTEGER
+        description: Unique spend record identifier (primary key).
+        nullable: false
+        example: 512
+      - name: channel
+        type: VARCHAR
+        description: "Marketing channel: organic, paid_search, social, email, referral, direct."
+        nullable: false
+        example: "paid_search"
+      - name: spend_date
+        type: DATE
+        description: Date of the spend.
+        nullable: false
+        example: "2024-06-15"
+      - name: amount
+        type: DOUBLE
+        description: Total spend in USD for this channel on this date.
+        nullable: false
+        example: 1250.00
+      - name: impressions
+        type: INTEGER
+        description: Number of ad impressions served.
+        nullable: false
+        example: 45000
+      - name: clicks
+        type: INTEGER
+        description: Number of clicks received.
+        nullable: false
+        example: 1350
+    relationships: []
+
+metrics:
+  revenue:
+    description: Total net revenue from completed orders.
+    sql: >
+      SELECT SUM(oi.quantity * oi.unit_price - oi.discount) AS revenue
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.order_id
+      WHERE o.status = 'completed'
+    tables: [orders, order_items]
+    pitfalls:
+      - Always filter orders.status = 'completed' to exclude cancelled/refunded.
+      - Revenue is (quantity * unit_price - discount), not just unit_price.
+      - Use order_items.unit_price, not products.price (price may have changed).
+
+  aov:
+    description: Average order value — mean revenue per completed order.
+    sql: >
+      SELECT SUM(oi.quantity * oi.unit_price - oi.discount) / COUNT(DISTINCT o.order_id) AS aov
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.order_id
+      WHERE o.status = 'completed'
+    tables: [orders, order_items]
+    pitfalls:
+      - Denominator must be COUNT(DISTINCT order_id), not COUNT(*) of items.
+      - Filter to completed orders only.
+
+  conversion_rate:
+    description: Percentage of sessions that resulted in a purchase.
+    sql: >
+      SELECT
+        ROUND(100.0 * SUM(CASE WHEN converted THEN 1 ELSE 0 END) / COUNT(*), 2) AS conversion_rate
+      FROM sessions
+    tables: [sessions]
+    pitfalls:
+      - Based on sessions, not unique customers.
+      - A single customer may have multiple sessions; this measures session-level conversion.
+
+  repeat_purchase_rate:
+    description: Percentage of customers who placed more than one completed order.
+    sql: >
+      SELECT ROUND(100.0 *
+        SUM(CASE WHEN order_count > 1 THEN 1 ELSE 0 END) / COUNT(*), 2) AS repeat_purchase_rate
+      FROM (
+        SELECT customer_id, COUNT(*) AS order_count
+        FROM orders
+        WHERE status = 'completed'
+        GROUP BY customer_id
+      )
+    tables: [orders]
+    pitfalls:
+      - Only count completed orders.
+      - Denominator is all customers who have at least one completed order.
+
+  churn_rate:
+    description: Percentage of customers with no completed order in the last 90 days who had prior orders.
+    sql: >
+      SELECT ROUND(100.0 *
+        SUM(CASE WHEN last_order < CURRENT_DATE - INTERVAL '90 days' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+      FROM (
+        SELECT customer_id, MAX(order_date) AS last_order
+        FROM orders
+        WHERE status = 'completed'
+        GROUP BY customer_id
+      )
+    tables: [orders]
+    pitfalls:
+      - The 90-day window is a business convention; always state the window used.
+      - Only considers completed orders for the last-order date.
+
+  customer_lifetime_value:
+    description: Average total revenue per customer across all their completed orders.
+    sql: >
+      SELECT AVG(ltv) AS customer_lifetime_value
+      FROM (
+        SELECT c.customer_id,
+               COALESCE(SUM(oi.quantity * oi.unit_price - oi.discount), 0) AS ltv
+        FROM customers c
+        LEFT JOIN orders o ON c.customer_id = o.customer_id AND o.status = 'completed'
+        LEFT JOIN order_items oi ON o.order_id = oi.order_id
+        GROUP BY c.customer_id
+      )
+    tables: [customers, orders, order_items]
+    pitfalls:
+      - LEFT JOIN from customers to include zero-revenue customers.
+      - This is historical LTV, not predictive.
+
+  gross_margin:
+    description: Revenue minus cost of goods sold, as a percentage of revenue.
+    sql: >
+      SELECT ROUND(100.0 *
+        (SUM(oi.quantity * oi.unit_price - oi.discount) - SUM(oi.quantity * p.cost))
+        / NULLIF(SUM(oi.quantity * oi.unit_price - oi.discount), 0), 2) AS gross_margin_pct
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.order_id
+      JOIN products p ON oi.product_id = p.product_id
+      WHERE o.status = 'completed'
+    tables: [orders, order_items, products]
+    pitfalls:
+      - Uses products.cost for COGS, which assumes current cost applies historically.
+      - Discount is subtracted from revenue, not from cost.
+      - NULLIF guards against division by zero when revenue is 0.
+
+known_pitfalls:
+  - name: Double-counting from bad joins
+    description: >
+      Joining order_items directly to customers without going through orders
+      can produce a cartesian product if a customer has multiple orders.
+      Always join order_items → orders → customers.
+  - name: Including non-completed orders in revenue
+    description: >
+      Cancelled and refunded orders should be excluded from revenue, AOV,
+      and most financial metrics. Always filter on orders.status = 'completed'.
+  - name: Confusing unit_price sources
+    description: >
+      order_items.unit_price captures the price at time of purchase.
+      products.price is the current catalog price. Use order_items.unit_price
+      for revenue calculations.
+  - name: Session vs. customer conversion
+    description: >
+      sessions.converted is per-session. A customer converting in 1 of 5
+      sessions yields a 20% session conversion rate but 100% customer conversion.
+      Specify the denominator clearly.
+  - name: Marketing spend channel mismatch
+    description: >
+      marketing_spend.channel and orders.channel use the same enum values,
+      but there is no direct foreign key. Joining them requires matching on
+      channel + date range, which can be lossy.
