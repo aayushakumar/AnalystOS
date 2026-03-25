@@ -16,7 +16,7 @@
   <img src="docs/assets/demo-screenshot.png" alt="AnalystOS Demo — Top 10 Customers by Lifetime Value" width="900" />
 </p>
 
-> Not another chat-to-SQL demo. AnalystOS is a **controlled multi-agent pipeline** with planning, validation, critique, observability, and evaluation — the kind of system you'd build at a top AI company.
+> Not another chat-to-SQL demo. AnalystOS is a **controlled multi-agent pipeline** with planning, validation, critique, observability, and evaluation.
 
 ```
 User:  "What is the average order value by product category?"
